@@ -1,0 +1,12 @@
+mashup_?.py
+*.py.*
+*.pyc
+*.swp
+.DS_Store
+*.egg-info
+*.out
+*.log
+*.json
+testparser.*
+__pycache__
+nohup.out
