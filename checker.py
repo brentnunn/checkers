@@ -8,3 +8,18 @@ class Checker:
         self.square = None
         self.king = False
 
+
+    def list_moves(self):
+        pass
+
+
+    def move(self, square):
+        pass
+
+
+    def list_jumps(self):
+        pass
+
+
+    def jump(self, square):
+        pass
