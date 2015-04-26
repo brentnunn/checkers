@@ -104,10 +104,17 @@ class Checker:
         return list_of_jump_lists
 
 
-    def move(self, square):
-        """ Move to new square """
+    def move(self, square_id):
+        """ Break connection to old square.
+            Establish connection to new square.
+            Become a king, if appropriate. """
+
+        """ NEEDED: Translate square_id to identity of square in Python """
         self.square.checker = None
         square.add_checker(self)
+        if (square.home_row and square.home_row != self.color and
+            not self.king):
+            self.king = True
 
 
     def jump_to_square(self, square):

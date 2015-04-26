@@ -109,6 +109,9 @@ class Checkerboard:
                                 white_move_squares = ((28, None), (27, 23)),
                                 home_row = 'white')
 
+        self.black_checkers = []
+        self.white_checkers = []
+
 
     def setup_new_board(self):
         """ Setup a new board with 12 checkers on each side 
