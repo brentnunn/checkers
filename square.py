@@ -11,17 +11,18 @@ class Square:
         Squares know if they are on a home row of one player on which
         the checkers of the opponent are converted to kings. """
     
-    def __init__(self, id, black_moves=None, white_moves=None, 
-                 home_row=None):
+    def __init__(self, id, black_move_squares=None, 
+                 white_move_squares=None, home_row=None):
         """ Possible moves are encoded as a tuple of tuples.
             Each inner tuple consists of the identities of 
             2 squares: (move_square, jump_square).
             If the move square is open, then a checker can move there.
             If the move square is occupied by an opponent's piece, 
-            then a checker can go to the jump square, if it is open. """
+            then a checker can jump to the jump square, if it is open. 
+            """
         self.id = id
-        self.black_moves = black_moves
-        self.white_moves = white_moves
+        self.black_move_squares = black_move_squares
+        self.white_move_squares = white_move_squares
         self.home_row = home_row
         self.checker = None
 
@@ -33,21 +34,23 @@ class Square:
         checker.square = self
 
 
-    def get_checker(self):
-        return self.checker
+    def remove_checker(self, checker):
+        """ Remove connection between a checker and this square """
+        checker.square = None
+        self.checker = None
 
 
-    def list_black_move_squares(self):
-        pass
+    """
+    def get_moves(self):
+        # Return the moves that can be made by the checker on this square
+
+        if self.checker.king:
+            return black_neighboring_squares + white_neighboring_squares
+        else:
+            if self.checker.color = 'black':
+                return self.black_neighboring_squares
+            else:
+                return self.white_neighboring_squares
+    """
 
 
-    def list_black_jump_squares(self):
-        pass
-
-        
-    def list_white_move_squares(self):
-        pass
-
-
-    def list_white_jump_squares(self):
-        pass
