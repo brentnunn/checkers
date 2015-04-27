@@ -40,17 +40,5 @@ class Square:
         self.checker = None
 
 
-    """
-    def get_moves(self):
-        # Return the moves that can be made by the checker on this square
-
-        if self.checker.king:
-            return black_neighboring_squares + white_neighboring_squares
-        else:
-            if self.checker.color = 'black':
-                return self.black_neighboring_squares
-            else:
-                return self.white_neighboring_squares
-    """
 
 

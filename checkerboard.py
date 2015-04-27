@@ -117,8 +117,8 @@ class Checkerboard:
         """ Setup a new board with 12 checkers on each side 
             in initial positions """
 
-        self.black_checkers = [ch.Checker('black') for i in range(12)]
-        self.white_checkers = [ch.Checker('white') for i in range(12)]
+        self.black_checkers = [ch.Checker('black', self) for i in range(12)]
+        self.white_checkers = [ch.Checker('white', self) for i in range(12)]
 
         """ Place checkers in starting squares """
         for enum_ch in enumerate(self.black_checkers):
@@ -149,4 +149,19 @@ class Checkerboard:
                 print(ch.square.id)
 
 
+    def remove_checker(self, checker):
+        """ Remove specified checker from play """
+        if checker.square and checker.square.checker == checker:
+            checker.square = None
+            
+        if checker.color == 'black':
+            # Break connection to square.
+            checker.square.checker = None
+            self.black_checkers.pop(checker)
+        elif:
+            checker.square.checker = None
+            self.white_checkers.pop(checker)
+        else:
+            # Raise error
+            pass
 

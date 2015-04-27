@@ -3,22 +3,31 @@ import square as sq
 
 class Checker:
 
-    def __init__(self, color):
+    def __init__(self, color, checkerboard):
         self.color = color
+        self.checkerboard = checkerboard
         self.square = None
         self.king = False
+        _jump_chain = []
+        _list_of_jump_chains = []
+        _jumped_checkers = []
 
 
     def get_neighboring_squares(self, square):
         """ What are the possible moves from current position? """
-        if king:
-            return(square.black_neighboring_squares + 
-                   square.white_neighboring_squares)
+        if self.king:
+            return(square.black_move_squares + 
+                   square.white_move_squares)
         else:
-            if color == 'black':
-                return square.black_neighboring_squares
+            if self.color == 'black':
+                return self.square.black_move_squares
             else:
-                return square.white_neighboring_squares
+                return self.square.white_move_squares
+
+
+    def get_checker(self, square_id):
+        """ Find checker associated with square_id """
+        return self.checkerboard.squares[square_id].checker
 
 
     def check_for_jump(self):
@@ -27,8 +36,9 @@ class Checker:
         for neighbors in self.get_neighboring_squares(self.square):
             """ Check for opponent in neighboring square and that the
                 square on other side of opponent's checker is empty """
-            if (neighbors[0].checker.color != self.color
-                and neighbors[1].checker == None):
+            if (self.get_checker(neighbors[0]) and
+                self.get_checker(neighbors[0]).color != self.color and
+                self.get_checker(neighbors[1]) == None):
 
                 return True
 
@@ -44,83 +54,112 @@ class Checker:
 
         # Neighboring squares without a checker are possible moves
         for neighbors in self.get_neighboring_squares(self.square):
-            if neighbors[0].checker == None:
+            if self.get_checker(neighbors[0]) == None:
                 moves.append(self.square, neighbors[0])
 
         return moves
 
 
-    def build_jump_lists(self, square):
+    def build_jump_chains(self, jump):
         """ Build lists of possible jumps """
-        jump_list.append(square)
+        self._jump_chain.append(jump)
+        new_square = self.checkerboard.squares[jump[1]]
         terminus = True
 
-        for neighbors in self.get_neighboring_squares(self.square):
-            if (neighbors[0].checker.color != self.color and
-                neighbors[0].checker not in jump_list and 
-                (neighbors[1].checker == None or
-                # Account for possibly jumping in a circle
-                #  Maybe use "... in (None, self.checker) ?"
-                neighbors[1].checker == self.checker)):
+        for neighbors in self.get_neighboring_squares(new_square):
+            if (neighbors[1] and
+                (self.get_checker(neighbors[1]) == None or
+                # Allow for possibly jumping in a circle back to start
+                self.get_checker(neighbors[1]) == self.checker) and
+                self.get_checker(neighbors[0]) and
+                self.get_checker(neighbors[0]).color != self.color and
+                # Prevent trying to jump the same checker twice
+                self.get_checker(neighbors[0]) not in jump_list)
 
                 # Jumps available, we are not at the end of a jump list
                 terminus = False
                 # Keep track of checkers jumped
-                jumped_checkers.append(neighbors[0].checker)
+                self._jumped_checkers.append(neighbors[0].checker)
                 # Recursively walk the tree of possible jumps
-                build_jump_lists(neighbors[1].square)
+                build_jump_chains(neighbors[0].checker, neighbors[1])
 
         if terminus:
-            """ If this square did not allow any jumps,
-                then one list of possible jumps is complete. """
-            list_of_jump_lists.append(jump_list)
+            """ If this square did not allow any further jumps,
+                then one chain of possible jumps is complete. """
+            self._list_of_jump_chains.append(self._jump_chain)
 
-        jump_list.pop()
-        jumped_checkers.pop()
+            self._jump_list.pop()
+            self._jumped_checkers.pop()
 
         return
 
 
     def list_jump_squares(self):
         """ This routine returns a list of lists.
-            Each inner list represents one set of jumps terminating at
-            a square from which no further jumps are available. """
+            Each inner list, a jump chain, represents one set of jumps 
+            terminating at a square from which no further jumps are 
+            available. 
+            The first entry in the jump chain is the starting square_id.
+            Subsequent entries in the jump chain are tuples consisting
+            of the checker jumped and the square_id jumped to. """
         
-        jump_list = []
-        list_of_jump_lists = []
-
-        # Track jumped checkers so we don't try to jump them twice
-        jumped_checkers = []
+        self._list_of_jump_chains = []
+        self._jumped_checkers = []
 
         """ Check for jumps around starting position """
         for neighbors in self.get_neighboring_squares(self.square):
-            if (neighbors[0].checker.color != self.color and 
-                neighbors[1].checker == None):
+            if (self.get_checker(neighbors[0]) and
+                self.get_checker(neighbors[0]).color != self.color and 
+                self.neighbors[1] and
+                self.get_checker(neighbors[1]) == None):
 
-                jump_list.append(self)
-                jumped_checkers.append(neighbors[0].checker)
-                build_jump_lists(neighbors[1].square)
+                # Starting a new jump chain
+                self._jump_chain = []
+                # Jump chains begin with the starting square_id
+                self._jump_chain.append(self.square.square_id)
+                self._jumped_checkers.append(neighbors[0].checker)
+                self.build_jump_chains(neighbors[0].checker, 
+                    neighbors[1])
 
-        return list_of_jump_lists
+        return self._list_of_jump_chains
 
 
     def move(self, square_id):
-        """ Break connection to old square.
+        """ Move checker to a new square.
+            Break connection to old square.
             Establish connection to new square.
             Become a king, if appropriate. """
 
-        """ NEEDED: Translate square_id to identity of square in Python """
+        # Break connection to old square.
         self.square.checker = None
-        square.add_checker(self)
-        if (square.home_row and square.home_row != self.color and
-            not self.king):
+        # Establish connection to new square.
+        self.checkerboard.squares[square_id].add_checker(self)
+        #square.add_checker(self)
+        if (self.square.home_row and 
+            self.square.home_row != self.color 
+            and not self.king):
             self.king = True
 
 
-    def jump_to_square(self, square):
-        pass
+    def jump(self, square_ids):
+        """ Jump through the list of square ids, removing jumped
+            checkers from the checkerboard. """
+
+        jump_list = square_ids
+        # Verify starting position is current checker's square
+        square_id = jump_list.pop(0)
+        if square_id != self.square.square_id:
+            # Raise error, jump list must start with current position
+            pass
+
+        while len(jump_list):
+            for neighbors in self.get_neighboring_squares(self.square):
+
+        for square_id in jump_list:
+            pass
 
 
-    def jump(self, square):
-        pass
+    def jump_checker(self, square_id):
+        """ Jump checker at specified square id """
+        self.checkerboard.remove_checker(get_checker(square_id))
 
