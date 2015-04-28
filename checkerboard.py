@@ -7,7 +7,7 @@ class Checkerboard:
         The rules of the game are hard coded into the checkerboard
         and its squares """
 
-    def __init__(self, id):
+    def __init__(self):
         """ Create dictionary of 32 squares keyed on standard checkers 
             notation, which numbers squares 1 through 32 """
         self.squares = {}
@@ -22,11 +22,11 @@ class Checkerboard:
                                 black_move_squares = ((8, 12), (7, 10)),
                                 home_row = 'black')
         self.squares[4] = sq.Square(4,
-                                black_move_squares = ((8, 11)),
+                                black_move_squares = ((8, 11), ),
                                 home_row = 'black')
         self.squares[5] = sq.Square(5, 
-                                black_move_squares = ((9, 14)),
-                                white_move_squares = ((1, None)))
+                                black_move_squares = ((9, 14), ),
+                                white_move_squares = ((1, None), ))
         self.squares[6] = sq.Square(6, 
                                 black_move_squares = ((10, 15), (9, 13)),
                                 white_move_squares = ((2, None), (1, None)))
@@ -46,11 +46,11 @@ class Checkerboard:
                                 black_move_squares = ((16, 20), (15, 18)),
                                 white_move_squares = ((8, 4), (7, 2)))
         self.squares[12] = sq.Square(12, 
-                                black_move_squares = ((16, 19)),
-                                white_move_squares = ((8, 3)))
+                                black_move_squares = ((16, 19), ),
+                                white_move_squares = ((8, 3), ))
         self.squares[13] = sq.Square(13, 
-                                black_move_squares = ((17, 22)),
-                                white_move_squares = ((9, 6)))
+                                black_move_squares = ((17, 22), ),
+                                white_move_squares = ((9, 6), ))
         self.squares[14] = sq.Square(14, 
                                 black_move_squares = ((18, 23), (17, 21)),
                                 white_move_squares = ((10, 7), (9, 5)))
@@ -70,11 +70,11 @@ class Checkerboard:
                                 black_move_squares = ((24, 28), (23, 26)),
                                 white_move_squares = ((16, 12), (15, 10)))
         self.squares[20] = sq.Square(20, 
-                                black_move_squares = ((24, 27)),
-                                white_move_squares = ((16, 11)))
+                                black_move_squares = ((24, 27), ),
+                                white_move_squares = ((16, 11), ))
         self.squares[21] = sq.Square(21, 
-                                black_move_squares = ((25, 30)),
-                                white_move_squares = ((17, 14)))
+                                black_move_squares = ((25, 30), ),
+                                white_move_squares = ((17, 14), ))
         self.squares[22] = sq.Square(22, 
                                 black_move_squares = ((26, 31), (25, 29)),
                                 white_move_squares = ((18, 15), (17, 13)))
@@ -94,10 +94,10 @@ class Checkerboard:
                                 black_move_squares = ((32, None), (31, None)),
                                 white_move_squares = ((24, 20), (23, 18)))
         self.squares[28] = sq.Square(28, 
-                                black_move_squares = ((32, None)),
-                                white_move_squares = ((24, 19)))
+                                black_move_squares = ((32, None), ),
+                                white_move_squares = ((24, 19), ))
         self.squares[29] = sq.Square(29, 
-                                white_move_squares = ((25, 22)),
+                                white_move_squares = ((25, 22), ),
                                 home_row = 'white')
         self.squares[30] = sq.Square(30, 
                                 white_move_squares = ((26, 23), (25, 21)),
@@ -152,16 +152,12 @@ class Checkerboard:
     def remove_checker(self, checker):
         """ Remove specified checker from play """
         if checker.square and checker.square.checker == checker:
-            checker.square = None
-            
+            checker.square.checker == None
+
         if checker.color == 'black':
             # Break connection to square.
-            checker.square.checker = None
             self.black_checkers.pop(checker)
-        elif:
-            checker.square.checker = None
-            self.white_checkers.pop(checker)
         else:
-            # Raise error
-            pass
+            self.white_checkers.pop(checker)
+
 
