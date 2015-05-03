@@ -45,6 +45,16 @@ class Checkerboard:
         checker.position = [row, column]
 
 
+    def remove_checker(self, row, column):
+        """ Remove checker from the game """
+        checker = self.squares[row][column]
+        self.squares[row][column] = None
+        if checker.color == 'black':
+            self.black_checkers.remove(checker)
+        else:
+            self.white_checkers.remove(checker)
+
+
     def setup_new_board(self):
         """ Setup a new board with 12 checkers on each side 
             in starting positions """
@@ -68,18 +78,4 @@ class Checkerboard:
                     self.place_checker(row, column, self.black_checkers[i])
                     i += 1
 
-
-
-    """
-    def remove_checker(self, checker):
-        # Remove specified checker from play
-        if checker.square and checker.square.checker == checker:
-            checker.square.checker == None
-
-        if checker.color == 'black':
-            # Break connection to square.
-            self.black_checkers.pop(checker)
-        else:
-            self.white_checkers.pop(checker)
-    """
 
