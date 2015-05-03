@@ -18,9 +18,9 @@ class Checker:
 
 
     @staticmethod
-    def get_black_squares(square):
-        """ Get squares that a black checker at row & column could move
-            or jump to.  Neighboring squares are returned as a tuple 
+    def get_black_move_squares(square):
+        """ Get neighboring squares that a black checker at square could
+            move or jump to.  Neighboring squares are returned as a tuple 
             with 2 values: position 0 is the move square, position 1
             is the jump square. """
         
@@ -50,9 +50,9 @@ class Checker:
 
 
     @staticmethod
-    def get_white_squares(square):
-        """ Get squares that a white checker at row & column could move
-            or jump to.  Neighboring squares are returned as a tuple 
+    def get_white_move_squares(square):
+        """ Get neighboring squares that a white checker at square could
+            move or jump to.  Neighboring squares are returned as a tuple 
             with 2 values: position 0 is the move square, position 1
             is the jump square. """
         
@@ -92,13 +92,13 @@ class Checker:
         """ Return true if checker has a jump move available """
 
         if self.king:
-            neighboring_squares = (self.get_black_squares(self.position) + 
-                                   self.get_white_squares(self.position))
+            neighboring_squares = (self.get_black_move_squares(self.position) + 
+                                   self.get_white_move_squares(self.position))
         else:
             if self.color == 'black':
-                neighboring_squares = self.get_black_squares(self.position)
+                neighboring_squares = self.get_black_move_squares(self.position)
             else:
-                neighboring_squares = self.get_white_squares(self.position)
+                neighboring_squares = self.get_white_move_squares(self.position)
 
         for move_square, jump_square in neighboring_squares:
             move_square_checker = self.get_checker(move_square)
