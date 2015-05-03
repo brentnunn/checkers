@@ -18,12 +18,13 @@ class Checker:
 
 
     @staticmethod
-    def get_black_squares(row, column):
+    def get_black_squares(square):
         """ Get squares that a black checker at row & column could move
             or jump to.  Neighboring squares are returned as a tuple 
             with 2 values: position 0 is the move square, position 1
             is the jump square. """
         
+        row, column = square
         if row == 0:
             # No moves or jumps to calculate
             return (None, )
@@ -49,12 +50,13 @@ class Checker:
 
 
     @staticmethod
-    def get_white_squares(row, column):
+    def get_white_squares(square):
         """ Get squares that a white checker at row & column could move
             or jump to.  Neighboring squares are returned as a tuple 
             with 2 values: position 0 is the move square, position 1
             is the jump square. """
         
+        row, column = square
         if row == 7:
             # No moves or jumps to calculate
             return (None, )
@@ -79,5 +81,36 @@ class Checker:
 
         return (sw, se)
            
+
+    def get_checker(self, square):
+        """ Return reference to the checker at square """
+        row, column = square
+        return self.checkerboard.squares[row][column]
+
+
+    def check_for_jump(self):
+        """ Return true if checker has a jump move available """
+
+        if self.king:
+            neighboring_squares = (self.get_black_squares(self.position) + 
+                                   self.get_white_squares(self.position))
+        else:
+            if self.color == 'black':
+                neighboring_squares = self.get_black_squares(self.position)
+            else:
+                neighboring_squares = self.get_white_squares(self.position)
+
+        for move_square, jump_square in neighboring_squares:
+            move_square_checker = self.get_checker(move_square)
+            jump_square_checker = self.get_checker(jump_square)
+
+            if (isinstance(move_square_checker, Checker) and
+                move_square_checker.color != self.color and
+                jump_square_checker == None):
+
+                return true
+
+        return False
+
 
 
