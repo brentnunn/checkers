@@ -88,19 +88,24 @@ class Checker:
         return self.checkerboard.squares[row][column]
 
 
+    def get_neighboring_squares(self):
+        """ Return the neighboring squares to which a checker might move_square
+            or jump to. """
+
+        if self.king:
+            return (self.get_black_move_squares(self.position) + 
+                    self.get_white_move_squares(self.position))
+        else:
+            if self.color == 'black':
+                return self.get_black_move_squares(self.position)
+            else:
+                return self.get_white_move_squares(self.position)
+
+
     def check_for_jump(self):
         """ Return true if checker has a jump move available """
 
-        if self.king:
-            neighboring_squares = (self.get_black_move_squares(self.position) + 
-                                   self.get_white_move_squares(self.position))
-        else:
-            if self.color == 'black':
-                neighboring_squares = self.get_black_move_squares(self.position)
-            else:
-                neighboring_squares = self.get_white_move_squares(self.position)
-
-        for move_square, jump_square in neighboring_squares:
+        for move_square, jump_square in self.get_neighboring_squares():
             move_square_checker = self.get_checker(move_square)
             jump_square_checker = self.get_checker(jump_square)
 
@@ -108,9 +113,21 @@ class Checker:
                 move_square_checker.color != self.color and
                 jump_square_checker == None):
 
-                return true
+                return True
 
         return False
 
 
+    def list_moves(self):
+        """ List non-jump moves from the current square.
+            Each move is a list encoded as the starting square followed
+            by the ending square. """
 
+        moves = []
+
+        # Neighboring squares without a checker are possible moves
+        for move_square, jump_square in self.get_neighboring_squares():
+            if self.get_checker(move_square) == None:
+                moves.append((self.position, move_square))
+
+        return moves
