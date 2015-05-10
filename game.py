@@ -1,7 +1,7 @@
 
-from player import Player
-from checkerboard import Checkerboard
-from checker import Checker
+from checkerboard import Checkerboard as cb
+from checker import Checker as ch
+from player import Player as pl
 
 class Game:
     """ Controlling class for a game of checkers """

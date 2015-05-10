@@ -2,9 +2,7 @@
 import checker as ch
 
 class Checkerboard:
-    """ A checkerboard for playing checkers.
-        The rules of the game are hard coded into the checkerboard
-        and its squares """
+    """ A checkerboard for playing checkers """
 
     def __init__(self):
         """ Create a 2 dimensional array representing checkerboard 
@@ -45,19 +43,31 @@ class Checkerboard:
         checker.position = [row, column]
 
 
-    def remove_checker(self, row, column):
-        """ Remove checker from the game """
-        checker = self.squares[row][column]
-        self.squares[row][column] = None
-        if checker.color == 'black':
-            self.black_checkers.remove(checker)
-        else:
-            self.white_checkers.remove(checker)
+    #def get_checker(self, row, column):
+    #    return squares[row][column]
+
+
+    #def move_checker(self, row, column, checker):
+    #    """" Move checker to a square """
+    #    self.squares[checker.position[0], checker.position[1]] = None
+    #    self.place_checker(row, column, checker)
+
+
+    #def remove_checker(self, row, column):
+    #    """ Remove checker from the game """
+    #    checker = self.squares[row][column]
+    #    self.squares[row][column] = None
+    #    if checker.color == 'black':
+    #        self.black_checkers.remove(checker)
+    #    else:
+    #        self.white_checkers.remove(checker)
 
 
     def setup_new_board(self):
         """ Setup a new board with 12 checkers on each side 
             in starting positions """
+
+        #self.squares = [[None for j in range(8)] for i in range(8)]
 
         self.black_checkers = [ch.Checker('black', self) for i in range(12)]
         self.white_checkers = [ch.Checker('white', self) for i in range(12)]
@@ -67,7 +77,8 @@ class Checkerboard:
         for row in range(3):
             for column in range(8):
                 if self.dark_square(row, column):
-                    self.squares[row][column] = self.white_checkers[i]
+                    #self.squares[row][column] = self.white_checkers[i]
+                    self.place_checker(row, column, self.white_checkers[i])
                     i += 1
 
         i = 0
