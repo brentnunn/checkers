@@ -9,6 +9,8 @@ class Checker:
         self.checkerboard = checkerboard
         self.position = []
         self._jumped_checkers = []
+        self._jump_chain = []
+        self._list_of_jump_chains = []
 
 
     def __str__(self):
@@ -122,24 +124,30 @@ class Checker:
         return moves
 
 
+    def _change_square(self, square):
+        """ Change checker's square """
+        new_row, new_column = square
+
+        # Remove reference to this checker from old position
+        self.checkerboard.squares[self.position[0]][self.position[1]] = None
+
+        # Place checker in new position
+        self.checkerboard.squares[new_row][new_column] = self
+        self.position = [new_row, new_column]
+
+
     def move(self, square):
         """ Move checker to square """
-        row, column = square
 
         # Verify we are moving to an empty neighboring square
         if (square in [sq[0] for sq in self.get_neighboring_squares()] and
             self.get_checker(square) == None):
             
-            # Remove reference to this checker from old position
-            self.checkerboard.squares[self.position[0]][self.position[1]] = None
-
-            # Place checker in new position
-            self.checkerboard.squares[row][column] = self
-            self.position = [row, column]
+            self._change_square(square)
 
         else:
             # raise Illegal Move error
-            pass
+            print("Invalid move from", self.position, "to", square)
 
 
     def check_for_jump(self):
@@ -159,12 +167,30 @@ class Checker:
         return False
 
 
-    def list_jumps(self, square):
-        """ List all possible jumps from square """
+    def _add_jump_square(self, square):
+        """ Add a jump square to a chain of jumps """
+        self._jump_chain.append(square)
 
-        print("list_jumps: square = ", square)
+        # Check for more jumps from new position
+        # will need another for loop here, checking square's neighbors
 
-        for neighbors in self.get_neighboring_squares(square):
+        # If no more jumps available, we are at the end of a jump chain
+        self._list_of_jump_chains.append(self._jump_chain)
+        self._jump_chain.pop()
+        self._jumped_checkers.pop()
+        return
+
+
+    def list_jumps(self):
+        """ List all possible jumps from checker's position """
+
+        print("list_jumps: position = ", this.position)
+
+        self._list_of_jump_chains = []
+        # Each jump chain begins with checker's starting position
+        self._jump_chain = [this.position]
+
+        for neighbors in self.get_neighboring_squares():
             if (neighbors[1] and
                 # Verify jump landing square is empty
                 (self.get_checker(neighbors[1]) == None or
@@ -176,7 +202,12 @@ class Checker:
                 # Prevent trying to jump the same checker twice
                 self.get_checker(neighbors[0]) not in self._jumped_checkers):
 
-                self._jumped_checkers.append(self.get_checker(neighbors[0]))
+                # Keep track of jumped checkers
+                self._jumped_checkers = [self.get_checker(neighbors[0])]
+                #self._jumped_checkers.append(self.get_checker(neighbors[0]))
+
+                # Add target squares to the jump chain
+                self._add_jump_square(neighbors[1])
 
                 print("list_jumps: Jump checker = ", neighbors[0])
                 print("list_jumps: Jump to square = ", neighbors[1])
@@ -184,11 +215,13 @@ class Checker:
                 #self._jump_chain = [self.position, ]
 
         print("list_jumps: _jumped_checkers = ", self._jumped_checkers)
+        print("list_jumps: _list_of_jump_chains = ", self._list_of_jump_chains)
+
+        return self._list_of_jump_chains
 
 
     def jump(self, square):
         """ Checker jumps to square """
-        row, column = square
 
         # Verify valid jump
         for jumped_square, jump_to_square in self.get_neighboring_squares():
@@ -201,24 +234,16 @@ class Checker:
                     jump_to_square_checker == None):
 
                     # Valid jump, remove jumped checker
+                    row, column = jumped_square
+                    self.checkerboard.remove_checker(row, column)
 
+                    self._change_square(jump_to_square)
 
+                    return
 
-                    
+        # Invalid jump request
+        print("Invalid jump from", self.position, "to", jumped_square)
 
-        if (square in [sq[1] for sq in self.get_neighboring_squares()] and
-            self.get_checker(square) == None):
-            
-            # Remove reference to this checker from old position
-            self.checkerboard.squares[self.position[0]][self.position[1]] = None
-
-            # Place checker in new position
-            self.checkerboard.squares[row][column] = self
-            self.position = [row, column]
-
-        else:
-            # raise Illegal Move error
-            pass
 
 
 
