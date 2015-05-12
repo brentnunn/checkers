@@ -1,5 +1,6 @@
 
 import checkerboard as cb
+from copy import deepcopy
 
 class Checker:
 
@@ -30,7 +31,7 @@ class Checker:
         row, column = square
         if row == 0:
             # No moves or jumps to calculate
-            return (None, )
+            return (None, None)
 
         nw = [None, None]
         ne = [None, None]
@@ -63,7 +64,7 @@ class Checker:
         row, column = square
         if row == 7:
             # No moves or jumps to calculate
-            return (None, )
+            return (None, None)
 
         sw = [None, None]
         se = [None, None]
@@ -100,13 +101,13 @@ class Checker:
             square = self.position
 
         if self.king:
-            return (self.get_black_move_squares(self.position) + 
-                    self.get_white_move_squares(self.position))
+            return (self.get_black_move_squares(square) + 
+                    self.get_white_move_squares(square))
         else:
             if self.color == 'black':
-                return self.get_black_move_squares(self.position)
+                return self.get_black_move_squares(square)
             else:
-                return self.get_white_move_squares(self.position)
+                return self.get_white_move_squares(square)
 
 
     def list_moves(self):
@@ -167,52 +168,86 @@ class Checker:
         return False
 
 
+    def valid_jump(self, neighbors):
+        """ Check for valid jump """
+        print("valid_jump: neighbors = ", neighbors)
+
+        if (neighbors[1] and
+            # Verify jump landing square is empty
+            (self.get_checker(neighbors[1]) == None or
+            # Allow for king possibly jumping in a circle back to start
+            self.get_checker(neighbors[1]) == self) and
+            # Is there an opponent's checker to jump over?
+            self.get_checker(neighbors[0]) and
+            self.get_checker(neighbors[0]).color != self.color and
+            # Prevent trying to jump the same checker twice
+            self.get_checker(neighbors[0]) not in self._jumped_checkers):
+
+            return True
+
+        else:
+            return False
+
+
+
     def _add_jump_square(self, square):
         """ Add a jump square to a chain of jumps """
+        print("_add_jump_square: square = ", square)
+
         self._jump_chain.append(square)
+        print("_add_jump_square: _jump_chain = ", self._jump_chain)
+        end_of_jump_chain = True
 
         # Check for more jumps from new position
-        # will need another for loop here, checking square's neighbors
+        for neighbors in self.get_neighboring_squares(square):
+            if self.valid_jump(neighbors):
+                end_of_jump_chain = False
 
-        # If no more jumps available, we are at the end of a jump chain
-        self._list_of_jump_chains.append(self._jump_chain)
+                # Keep track of jumped checkers
+                self._jumped_checkers.append(self.get_checker(neighbors[0]))
+
+                # Add target squares to the jump chain
+                self._add_jump_square(neighbors[1])
+
+                print("_add_jump_square: Jump checker = ", neighbors[0])
+                print("_add_jump_square: Jump to square = ", neighbors[1])
+
+        # If end of a jump chain
+        if end_of_jump_chain:
+            print("_add_jump_square: end of jump chain")
+            self._list_of_jump_chains.append(deepcopy(self._jump_chain))
+            print("_add_jump_square: _list_of_jump_chains = ", self._list_of_jump_chains)
+
         self._jump_chain.pop()
+        print("_add_jump_square: _jump_chain = ", self._jump_chain)
         self._jumped_checkers.pop()
+        print("_add_jump_square: _jumped_checkers = ", self._jumped_checkers)
+
         return
 
 
     def list_jumps(self):
         """ List all possible jumps from checker's position """
+        print("list_jumps: position = ", self.position)
 
-        print("list_jumps: position = ", this.position)
-
-        self._list_of_jump_chains = []
         # Each jump chain begins with checker's starting position
-        self._jump_chain = [this.position]
+        self._jump_chain = [self.position]
+        print("list_jumps: _jump_chain = ", self._jump_chain)
+        self._list_of_jump_chains = []
+        print("list_jumps: _list_of_jump_chains = ", self._list_of_jump_chains)
 
         for neighbors in self.get_neighboring_squares():
-            if (neighbors[1] and
-                # Verify jump landing square is empty
-                (self.get_checker(neighbors[1]) == None or
-                # Allow for possibly jumping in a circle back to start
-                self.get_checker(neighbors[1]) == self) and
-                # Is there an opponent's checker to jump over?
-                self.get_checker(neighbors[0]) and
-                self.get_checker(neighbors[0]).color != self.color and
-                # Prevent trying to jump the same checker twice
-                self.get_checker(neighbors[0]) not in self._jumped_checkers):
-
+            if self.valid_jump(neighbors):
                 # Keep track of jumped checkers
                 self._jumped_checkers = [self.get_checker(neighbors[0])]
+                print("list_jumps: _jumped_checkers = ", self._jumped_checkers)
                 #self._jumped_checkers.append(self.get_checker(neighbors[0]))
 
                 # Add target squares to the jump chain
                 self._add_jump_square(neighbors[1])
 
-                print("list_jumps: Jump checker = ", neighbors[0])
+                print("list_jumps: Jumped square = ", neighbors[0])
                 print("list_jumps: Jump to square = ", neighbors[1])
-
-                #self._jump_chain = [self.position, ]
 
         print("list_jumps: _jumped_checkers = ", self._jumped_checkers)
         print("list_jumps: _list_of_jump_chains = ", self._list_of_jump_chains)
