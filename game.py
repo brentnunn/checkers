@@ -1,7 +1,10 @@
 
+import logging
 from checkerboard import Checkerboard as cb
 from checker import Checker as ch
 from player import Player as pl
+
+logger = logging.getLogger(__name__)
 
 class Game:
     """ Controlling class for a game of checkers """

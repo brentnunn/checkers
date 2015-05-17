@@ -1,6 +1,9 @@
 
+import logging
 import checkerboard as cb
 from copy import deepcopy
+
+logger = logging.getLogger(__name__)
 
 class Checker:
 
@@ -12,6 +15,8 @@ class Checker:
         self._jumped_checkers = []
         self._jump_chain = []
         self._list_of_jump_chains = []
+
+        logger.info('Initialized {} checker {}'.format(self.color, self.__repr__()))
 
 
     def __str__(self):
@@ -27,7 +32,9 @@ class Checker:
             move or jump to.  Neighboring squares are returned as a tuple 
             with 2 values: position 0 is the move square, position 1
             is the jump square. """
-        
+
+        logger.debug('get_black_move_squares({})'.format(square))
+
         row, column = square
         if row == 0:
             # No moves or jumps to calculate
@@ -61,6 +68,8 @@ class Checker:
             with 2 values: position 0 is the move square, position 1
             is the jump square. """
         
+        logger.debug('get_white_move_squares({})'.format(square))
+
         row, column = square
         if row == 7:
             # No moves or jumps to calculate
@@ -89,6 +98,7 @@ class Checker:
 
     def get_checker(self, square):
         """ Return reference to the checker at square """
+
         row, column = square
         return self.checkerboard.squares[row][column]
 
@@ -97,8 +107,11 @@ class Checker:
         """ Return the neighboring squares to which a checker might move
             or jump to. """
 
+        logger.debug('get_neighboring_squares({})'.format(square))
+
         if square == None:
             square = self.position
+            logger.debug('get_neighboring_squares(): square='.format(square))
 
         if self.king:
             return (self.get_black_move_squares(square) + 
@@ -122,11 +135,13 @@ class Checker:
             if self.get_checker(move_square) == None:
                 moves.append((self.position, move_square))
 
+        logger.debug('list_moves(): moves[]={}'.format(moves))
         return moves
 
 
     def _change_square(self, square):
         """ Change checker's square """
+        
         new_row, new_column = square
 
         # Remove reference to this checker from old position
@@ -139,20 +154,27 @@ class Checker:
 
     def move(self, square):
         """ Move checker to square """
+        
+        logger.debug('move({})'.format(square))
 
         # Verify we are moving to an empty neighboring square
         if (square in [sq[0] for sq in self.get_neighboring_squares()] and
             self.get_checker(square) == None):
             
+            logger.info('move(): Moving from {} to {}'.format(self.position, square))
+
             self._change_square(square)
 
         else:
             # raise Illegal Move error
+            logger.warning('move(): Illegal move from {} to {}'.format(self.position, square))
             print("Invalid move from", self.position, "to", square)
 
 
     def check_for_jump(self):
         """ Return true if checker has a jump move available """
+
+        logger.debug('check_for_jump()')
 
         for move_square, jump_square in self.get_neighboring_squares():
             if jump_square:
@@ -170,8 +192,7 @@ class Checker:
 
     def valid_jump(self, neighbors):
         """ Check for valid jump """
-        print("valid_jump: neighbors = ", neighbors)
-
+        
         if (neighbors[1] and
             # Verify jump landing square is empty
             (self.get_checker(neighbors[1]) == None or
@@ -183,19 +204,22 @@ class Checker:
             # Prevent trying to jump the same checker twice
             self.get_checker(neighbors[0]) not in self._jumped_checkers):
 
+            logger.debug('valid_jump({}): True'.format(neighbors))
             return True
 
         else:
+            logger.debug('valid_jump({}): False'.format(neighbors))
             return False
 
 
 
     def _add_jump_square(self, square):
         """ Add a jump square to a chain of jumps """
-        print("_add_jump_square: square = ", square)
+        logger.debug('_add_jump_square({})'.format(square))
 
         self._jump_chain.append(square)
-        print("_add_jump_square: _jump_chain = ", self._jump_chain)
+        logger.debug('_add_jump_square(): self._jump_chain={}'.format(self._jump_chain))
+
         end_of_jump_chain = True
 
         # Check for more jumps from new position
@@ -209,54 +233,54 @@ class Checker:
                 # Add target squares to the jump chain
                 self._add_jump_square(neighbors[1])
 
-                print("_add_jump_square: Jump checker = ", neighbors[0])
-                print("_add_jump_square: Jump to square = ", neighbors[1])
+                logger.debug('_add_jump_square(): Jump checker={}'.format(neighbors[0]))
+                logger.debug('_add_jump_square(): Jump to square={}'.format(neighbors[1]))
 
         # If end of a jump chain
         if end_of_jump_chain:
-            print("_add_jump_square: end of jump chain")
+            logger.debug('_add_jump_square(): end of jump chain')
             self._list_of_jump_chains.append(deepcopy(self._jump_chain))
-            print("_add_jump_square: _list_of_jump_chains = ", self._list_of_jump_chains)
+            logger.debug('_add_jump_square(): self._list_of_jump_chains={}'.format(self._list_of_jump_chains))
 
         self._jump_chain.pop()
-        print("_add_jump_square: _jump_chain = ", self._jump_chain)
+        logger.debug('_add_jump_square(): self._jump_chain={}'.format(self._jump_chain))
+
         self._jumped_checkers.pop()
-        print("_add_jump_square: _jumped_checkers = ", self._jumped_checkers)
+        logger.debug('_add_jump_square(): self._jumped_checkers={}'.format(self._jumped_checkers))
 
         return
 
 
     def list_jumps(self):
         """ List all possible jumps from checker's position """
-        print("list_jumps: position = ", self.position)
+        logger.debug('list_jumps(): position={}'.format(self.position))
 
         # Each jump chain begins with checker's starting position
         self._jump_chain = [self.position]
-        print("list_jumps: _jump_chain = ", self._jump_chain)
+        logger.debug('list_jumps(): _jump_chain={}'.format(self._jump_chain))
+
         self._list_of_jump_chains = []
-        print("list_jumps: _list_of_jump_chains = ", self._list_of_jump_chains)
 
         for neighbors in self.get_neighboring_squares():
             if self.valid_jump(neighbors):
                 # Keep track of jumped checkers
                 self._jumped_checkers = [self.get_checker(neighbors[0])]
-                print("list_jumps: _jumped_checkers = ", self._jumped_checkers)
+                logger.debug('list_jumps(): _jumped_checkers={}'.format(self._jumped_checkers))
                 #self._jumped_checkers.append(self.get_checker(neighbors[0]))
 
                 # Add target squares to the jump chain
                 self._add_jump_square(neighbors[1])
 
-                print("list_jumps: Jumped square = ", neighbors[0])
-                print("list_jumps: Jump to square = ", neighbors[1])
+                logger.debug('list_jumps(): Jumped square={}'.format(neighbors[0]))
+                logger.debug('list_jumps(): Jump to square={}'.format(neighbors[1]))
 
-        print("list_jumps: _jumped_checkers = ", self._jumped_checkers)
-        print("list_jumps: _list_of_jump_chains = ", self._list_of_jump_chains)
-
+        logger.debug('list_jumps(): _list_of_jump_chains={}'.format(self._list_of_jump_chains))
         return self._list_of_jump_chains
 
 
     def jump(self, square):
         """ Checker jumps to square """
+        logger.debug('jump({})'.format(square))
 
         # Verify valid jump
         for jumped_square, jump_to_square in self.get_neighboring_squares():
@@ -269,6 +293,7 @@ class Checker:
                     jump_to_square_checker == None):
 
                     # Valid jump, remove jumped checker
+                    logger.info('jump(): Jumping from {} to {}'.format(self.position, square))
                     row, column = jumped_square
                     self.checkerboard.remove_checker(row, column)
 
@@ -277,7 +302,7 @@ class Checker:
                     return
 
         # Invalid jump request
-        print("Invalid jump from", self.position, "to", jumped_square)
+        logger.warning('jump(): Invalid jump from {} to {}'.format(self.position, jumped_square))
 
 
 

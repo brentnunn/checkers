@@ -1,5 +1,9 @@
 
+import logging
 import checker as ch
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 class Checkerboard:
     """ A checkerboard for playing checkers """
@@ -11,6 +15,8 @@ class Checkerboard:
 
         self.black_checkers = []
         self.white_checkers = []
+
+        logger.debug('Initialized checkerboard {}'.format(self))
 
 
     def print_board(self):

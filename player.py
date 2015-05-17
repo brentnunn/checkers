@@ -1,7 +1,9 @@
 
+import logging
 import checkerboard as cb
 import checker as ch
 
+logger = logging.getLogger(__name__)
 
 class Player:
 
