@@ -27,8 +27,8 @@ class Checker:
             return ' ' + self.color[0] + '  '
 
 
-    @functools.lru_cache(maxsize=32)
     @staticmethod
+    @functools.lru_cache(maxsize=32)
     def get_black_move_squares(square):
         """ Get neighboring squares that a black checker at square could
             move or jump to.  Neighboring squares are returned as a tuple 
@@ -52,6 +52,7 @@ class Checker:
             ne[0] = (row - 1, column + 1)
 
         if row == 1:
+            # No jumps to calculate
             return (nw, ne)
 
         # Calculate black jump squares
@@ -63,8 +64,8 @@ class Checker:
         return (nw, ne)
 
 
-    @functools.lru_cache(maxsize=32)
     @staticmethod
+    @functools.lru_cache(maxsize=32)
     def get_white_move_squares(square):
         """ Get neighboring squares that a white checker at square could
             move or jump to.  Neighboring squares are returned as a tuple 
@@ -81,6 +82,7 @@ class Checker:
         sw = [None, None]
         se = [None, None]
 
+
         # Calculate white move squares
         if column > 0:
             sw[0] = (row + 1, column - 1)
@@ -88,6 +90,7 @@ class Checker:
             se[0] = (row + 1, column + 1)
 
         if row == 6:
+            # No jumps to calculate
             return (sw, se)
 
         # Calculate white jump squares
@@ -105,15 +108,15 @@ class Checker:
         return self.checkerboard.get_checker(square)
 
 
-    def get_neighboring_squares(self, square=None):
+    def get_move_squares(self, square=None):
         """ Return the neighboring squares to which a checker might move
             or jump to. """
 
-        logger.debug('get_neighboring_squares({})'.format(square))
+        logger.debug('get_move_squares({})'.format(square))
 
         if square == None:
             square = self.position
-            logger.debug('get_neighboring_squares(): square='.format(square))
+            logger.debug('get_move_squares(): square='.format(square))
 
         if self.king:
             return (self.get_black_move_squares(square) + 
@@ -133,8 +136,8 @@ class Checker:
         moves = []
 
         # Neighboring squares without a checker are possible moves
-        for move_square, jump_square in self.get_neighboring_squares():
-            if self.get_checker(move_square) == None:
+        for move_square, jump_square in self.get_move_squares():
+            if move_square and self.get_checker(move_square) == None:
                 moves.append((self.position, move_square))
 
         logger.debug('list_moves(): moves[]={}'.format(moves))
@@ -162,7 +165,7 @@ class Checker:
         logger.debug('move({})'.format(square))
 
         # Verify we are moving to an empty neighboring square
-        if (square in [sq[0] for sq in self.get_neighboring_squares()] and
+        if (square in [sq[0] for sq in self.get_move_squares()] and
             self.get_checker(square) == None):
             
             logger.info('move(): Moving from {} to {}'.format(self.position, square))
@@ -180,7 +183,7 @@ class Checker:
 
         logger.debug('check_for_jump()')
 
-        for move_square, jump_square in self.get_neighboring_squares():
+        for move_square, jump_square in self.get_move_squares():
             if jump_square:
                 move_square_checker = self.get_checker(move_square)
                 jump_square_checker = self.get_checker(jump_square)
@@ -228,7 +231,7 @@ class Checker:
         end_of_jump_chain = True
 
         # Check for more jumps from new position
-        for neighbors in self.get_neighboring_squares(square):
+        for neighbors in self.get_move_squares(square):
             if self.valid_jump(neighbors):
                 end_of_jump_chain = False
 
@@ -267,7 +270,7 @@ class Checker:
 
         self._list_of_jump_chains = []
 
-        for neighbors in self.get_neighboring_squares():
+        for neighbors in self.get_move_squares():
             if self.valid_jump(neighbors):
                 # Keep track of jumped checkers
                 self._jumped_checkers = [self.get_checker(neighbors[0])]
@@ -290,7 +293,7 @@ class Checker:
         logger.debug('jump({})'.format(square))
 
         # Verify valid jump
-        for jumped_square, jump_to_square in self.get_neighboring_squares():
+        for jumped_square, jump_to_square in self.get_move_squares():
             if jump_to_square == square:
                 jumped_square_checker = self.get_checker(jumped_square)
                 jump_to_square_checker = self.get_checker(jump_to_square)
