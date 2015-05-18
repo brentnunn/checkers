@@ -16,11 +16,22 @@ class Checkerboard:
         self.black_checkers = []
         self.white_checkers = []
 
-        logger.debug('Initialized checkerboard {}'.format(self))
+        logger.info('Initialized checkerboard {}'.format(self))
+
+
+    def dark_square(self, square):
+        """ True if this is a dark square, a valid location 
+            for a checker """
+
+        logger.debug('dark_square({})'.format(square))
+
+        row, column = square
+        return (row + column) % 2 != 0
 
 
     def print_board(self):
         """ Print the contents of the checkerboard """
+
         print()
 
         for row in range(8):
@@ -28,41 +39,44 @@ class Checkerboard:
                 if self.squares[row][column]:
                     print(self.squares[row][column], end='')
                 else:
-                    if self.dark_square(row, column):
+                    if self.dark_square((row, column)):
                         print(' __ ', end='')
                     else:
                         print(' .  ', end='')
             print()
-
         print()
 
 
-    def dark_square(self, row, column):
-        """ True if this is a dark square, a valid location 
-            for a checker """
-        return (row + column) % 2 != 0
-
-
-    def place_checker(self, row, column, checker):
+    def place_checker(self, square, checker):
         """ Place checker on square """
+
+        logger.debug('place_checker({}, {})'.format(square, checker))
+
+        row, column = square
         self.squares[row][column] = checker
-        checker.position = [row, column]
+        checker.position = (row, column)
 
 
-    #def get_checker(self, row, column):
-    #    return squares[row][column]
+    def get_checker(self, square):
+        """ Return reference to the checker at square """
+
+        logger.debug('get_checker({})'.format(square))
+
+        row, column = square
+        return self.squares[row][column]
 
 
-    #def move_checker(self, row, column, checker):
-    #    """" Move checker to a square """
-    #    self.squares[checker.position[0], checker.position[1]] = None
-    #    self.place_checker(row, column, checker)
+    def remove_checker(self, square):
+        """ Remove checker from the board """
 
+        logger.debug('remove_checker({})'.format(square))
 
-    def remove_checker(self, row, column):
-        """ Remove checker from the game """
+        row, column = square
         checker = self.squares[row][column]
+        logger.debug('remove_checker(): checker={}'.format(checker))
+
         self.squares[row][column] = None
+
         if checker.color == 'black':
             self.black_checkers.remove(checker)
         else:
@@ -73,7 +87,7 @@ class Checkerboard:
         """ Setup a new board with 12 checkers on each side 
             in starting positions """
 
-        #self.squares = [[None for j in range(8)] for i in range(8)]
+        logger.info('setup_new_board()')
 
         self.black_checkers = [ch.Checker('black', self) for i in range(12)]
         self.white_checkers = [ch.Checker('white', self) for i in range(12)]
@@ -82,17 +96,15 @@ class Checkerboard:
         i = 0
         for row in range(3):
             for column in range(8):
-                if self.dark_square(row, column):
-                    #self.squares[row][column] = self.white_checkers[i]
-                    self.place_checker(row, column, self.white_checkers[i])
+                if self.dark_square((row, column)):
+                    self.place_checker((row, column), self.white_checkers[i])
                     i += 1
 
         i = 0
         for row in range(5, 8):
             for column in range(8):
-                if self.dark_square(row, column):
-                    #self.squares[row][column] = self.black_checkers[i]
-                    self.place_checker(row, column, self.black_checkers[i])
+                if self.dark_square((row, column)):
+                    self.place_checker((row, column), self.black_checkers[i])
                     i += 1
 
 
