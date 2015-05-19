@@ -7,7 +7,7 @@ from copy import deepcopy
 logger = logging.getLogger(__name__)
 
 class Checker:
-
+    """ Checkers for a checkergame """
     def __init__(self, color, checkerboard):
         self.color = color
         self.king = False
@@ -200,7 +200,7 @@ class Checker:
     def valid_jump(self, neighbors):
         """ Check for valid jump """
         
-        if (neighbors[1] and
+        if (neighbors and neighbors[1] and
             # Verify jump landing square is empty
             (self.get_checker(neighbors[1]) == None or
             # Allow for king possibly jumping in a circle back to start
@@ -313,5 +313,18 @@ class Checker:
         # Invalid jump request
         logger.warning('jump(): Invalid jump from {} to {}'.format(self.position, jumped_square))
 
+
+    def jump_chain(self, chain):
+        """ Walk a jump chain (list of squares), jumping checkers between squares """
+
+        logger.debug('jump_chain({})'.format(chain))
+
+        # Jump chains always start with current position
+        if len(chain) > 1 and chain[0] == self.position:
+            for square in chain[1:]:
+                self.jump(square)
+
+        else:
+            logger.warning('jump_chain({}): Invalid jump chain'.format(chain))
 
 
