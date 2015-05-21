@@ -71,10 +71,10 @@ class Checkerboard:
 
         logger.debug('remove_checker({})'.format(square))
 
-        row, column = square
-        checker = self.squares[row][column]
+        checker = self.get_checker(square)
         logger.debug('remove_checker(): checker={}'.format(checker))
 
+        row, column = square
         self.squares[row][column] = None
 
         if checker.color == 'black':

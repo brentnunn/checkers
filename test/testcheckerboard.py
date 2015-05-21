@@ -41,7 +41,7 @@ class testCheckerboard(unittest.TestCase):
                 self.assertTrue(row < 3)
                 self.assertTrue((row + column) % 2 != 0)
 
-        # Verify checkerboard hosts 24 checkers in all squares
+        # Verify checkerboard hosts distinct 24 checkers
         pass
 
 

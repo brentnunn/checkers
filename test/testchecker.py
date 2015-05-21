@@ -46,7 +46,6 @@ class testChecker(unittest.TestCase):
             move_squares = ch.Checker.get_black_move_squares((7,6))
             self.assertEqual(move_squares, ([(6, 5), (5, 4)], [(6, 7), None]))
     
-
     
     def test_get_white_move_squares(self):
         with self.subTest('Testing get_white_move_squares'):
@@ -73,7 +72,6 @@ class testChecker(unittest.TestCase):
             move_squares = ch.Checker.get_white_move_squares((7,6))
             self.assertEqual(move_squares, (None, None))
     
-
 
     def test_get_checker(self):
         cb1 = cb.Checkerboard()
@@ -242,4 +240,6 @@ class testChecker(unittest.TestCase):
             self.assertEqual(num_white_checkers_pre_jump, len(cb1.white_checkers) + 2)
 
 
-
+    def test_checker_promotion(self):
+        """ Verify non-king checkers are promoted on reaching opponent's home row """
+        pass

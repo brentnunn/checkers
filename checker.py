@@ -41,6 +41,7 @@ class Checker:
         if row == 0:
             # No moves or jumps to calculate
             return (None, None)
+            #return
 
         nw = [None, None]
         ne = [None, None]
@@ -78,6 +79,7 @@ class Checker:
         if row == 7:
             # No moves or jumps to calculate
             return (None, None)
+            #return
 
         sw = [None, None]
         se = [None, None]
@@ -136,9 +138,12 @@ class Checker:
         moves = []
 
         # Neighboring squares without a checker are possible moves
-        for move_square, jump_square in self.get_move_squares():
-            if move_square and self.get_checker(move_square) == None:
-                moves.append((self.position, move_square))
+        #for move_square, jump_square in self.get_move_squares():
+        for move_squares in self.get_move_squares():
+            if move_squares:
+                move_square, jump_square = move_squares
+                if move_square and self.get_checker(move_square) == None:
+                    moves.append((self.position, move_square))
 
         logger.debug('list_moves(): moves[]={}'.format(moves))
         return moves
@@ -149,14 +154,18 @@ class Checker:
         
         logger.debug('_change_square({})'.format(square))
 
-        new_row, new_column = square
-
         # Remove reference to this checker from old position
         self.checkerboard.squares[self.position[0]][self.position[1]] = None
 
         # Place checker in new position
-        self.checkerboard.squares[new_row][new_column] = self
-        self.position = (new_row, new_column)
+        self.checkerboard.place_checker(square, self)
+
+        # See if checker should be promoted to a king
+        row, column = square
+        if not self.king:
+            if (self.color == 'black' and row == 0 or
+                self.color == 'white' and row == 7):
+                self.king = True
 
 
     def move(self, square):
@@ -165,6 +174,7 @@ class Checker:
         logger.debug('move({})'.format(square))
 
         # Verify we are moving to an empty neighboring square
+        """
         if (square in [sq[0] for sq in self.get_move_squares()] and
             self.get_checker(square) == None):
             
@@ -176,6 +186,9 @@ class Checker:
             # Illegal Move error
             logger.warning('move(): Illegal move from {} to {}'.format(self.position, square))
             print("Invalid move from", self.position, "to", square)
+        """
+        logger.info('move(): Moving from {} to {}'.format(self.position, square))
+        self._change_square(square)
 
 
     def check_for_jump(self):
@@ -247,6 +260,7 @@ class Checker:
         # If end of a jump chain
         if end_of_jump_chain:
             logger.debug('_add_jump_square(): end of jump chain')
+
             self._list_of_jump_chains.append(deepcopy(self._jump_chain))
             logger.debug('_add_jump_square(): self._list_of_jump_chains={}'.format(self._list_of_jump_chains))
 
@@ -293,22 +307,25 @@ class Checker:
         logger.debug('jump({})'.format(square))
 
         # Verify valid jump
-        for jumped_square, jump_to_square in self.get_move_squares():
-            if jump_to_square == square:
-                jumped_square_checker = self.get_checker(jumped_square)
-                jump_to_square_checker = self.get_checker(jump_to_square)
+        #for jumped_square, jump_to_square in self.get_move_squares():
+        for move_squares in self.get_move_squares():
+            if move_squares:
+                jumped_square, jump_to_square = move_squares
+                if jump_to_square == square:
+                    jumped_square_checker = self.get_checker(jumped_square)
+                    jump_to_square_checker = self.get_checker(jump_to_square)
 
-                if (isinstance(jumped_square_checker, Checker) and
-                    jumped_square_checker.color != self.color and
-                    jump_to_square_checker == None):
+                    if (isinstance(jumped_square_checker, Checker) and
+                        jumped_square_checker.color != self.color and
+                        jump_to_square_checker == None):
 
-                    # Valid jump, remove jumped checker
-                    logger.info('jump(): Jumping from {} to {}'.format(self.position, square))
-                    self.checkerboard.remove_checker(jumped_square)
+                        # Valid jump, remove jumped checker
+                        logger.info('jump(): Jumping from {} to {}'.format(self.position, square))
+                        self.checkerboard.remove_checker(jumped_square)
 
-                    self._change_square(jump_to_square)
+                        self._change_square(jump_to_square)
 
-                    return
+                        return
 
         # Invalid jump request
         logger.warning('jump(): Invalid jump from {} to {}'.format(self.position, jumped_square))
