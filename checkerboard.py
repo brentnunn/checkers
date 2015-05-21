@@ -89,6 +89,8 @@ class Checkerboard:
 
         logger.info('setup_new_board()')
 
+        self.squares = [[None for j in range(8)] for i in range(8)]
+        
         self.black_checkers = [ch.Checker('black', self) for i in range(12)]
         self.white_checkers = [ch.Checker('white', self) for i in range(12)]
 

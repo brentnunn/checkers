@@ -38,7 +38,7 @@ class RandomPlayer(ComputerPlayer):
         return ('surrender',)
 
 
-    def take_turn(self):
+    def play(self):
         """ Determine action in game of checkers """
 
         evaluation = self.evaluate_board()
