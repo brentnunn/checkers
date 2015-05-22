@@ -10,3 +10,4 @@ mashup_?.py
 testparser.*
 __pycache__
 nohup.out
+pygame

@@ -24,12 +24,6 @@ class RandomPlayer(ComputerPlayer):
         jumps_list = self.list_jumps()
         if jumps_list:
             return ('jump', random.choice(jumps_list))
-        """    
-        if len(jumps_list) == 1:
-            return ('jump', jumps_list[0])
-        elif len(jumps_list) > 1:
-            return ('jump', random.choice(jumps_list))
-        """
 
         moves_list = self.list_moves()
         if moves_list:
