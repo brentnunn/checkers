@@ -40,22 +40,30 @@ if __name__ == '__main__':
     game = Game(black_player, white_player)
 
     game.chb.print_board()
+    print('Starting game\n')
+    
     turn = 'black'
 
     game_on = True
     while game_on:
+        sleep(4)
         if turn == 'black':
             if black_player.play() == 'surrender':
+                msg = 'Black surrenders'
                 game_on = False
             else:
+                msg = 'Black move complete'
                 turn = 'white'
         else:
             if white_player.play() == 'surrender':
+                msg = 'White surrenders'
                 game_on = False
             else:
+                msg = 'White move complete'
                 turn = 'black'
 
         game.chb.print_board()
-        sleep(4)
+        print(msg)
+        print()
 
     print("Game over")
