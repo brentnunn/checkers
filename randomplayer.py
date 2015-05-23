@@ -39,14 +39,17 @@ class RandomPlayer(ComputerPlayer):
         if evaluation[0] == 'jump':
             self.jump_checkers(evaluation[1])
             print("Jump move completed")
+            return "jump"
 
         elif evaluation[0] == 'move':
             self.move_checker(evaluation[1])
             print("Move completed")
+            return "move"
 
         else:
             print("I surrender")
+            return "surrender"
 
-        return
+        
 
 
