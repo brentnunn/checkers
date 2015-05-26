@@ -5,7 +5,6 @@ from checkerboard import Checkerboard
 from checker import Checker
 from player import Player
 from computerplayer import ComputerPlayer
-from randomplayer import RandomPlayer
 
 
 logger = logging.getLogger(__name__)
@@ -34,8 +33,8 @@ class Game:
 
 
 if __name__ == '__main__':
-    black_player = RandomPlayer()
-    white_player = RandomPlayer()
+    black_player = ComputerPlayer()
+    white_player = ComputerPlayer()
 
     game = Game(black_player, white_player)
 
