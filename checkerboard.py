@@ -63,7 +63,10 @@ class Checkerboard:
         logger.debug('get_checker({})'.format(square))
 
         row, column = square
-        return self.squares[row][column]
+        if row < 0 or row > 7 or column < 0 or column > 7:
+            return None
+        else:
+            return self.squares[row][column]
 
 
     def remove_checker(self, square):

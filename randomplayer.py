@@ -17,7 +17,6 @@ class RandomPlayer(ComputerPlayer):
         random.seed()
 
 
-
     def evaluate_board(self):
         """ Evaluate the checkerboard, to determine next move """
 

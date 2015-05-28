@@ -5,6 +5,7 @@ from checkerboard import Checkerboard
 from checker import Checker
 from player import Player
 from computerplayer import ComputerPlayer
+from simpleplayer import SimplePlayer
 
 
 logger = logging.getLogger(__name__)
@@ -33,8 +34,10 @@ class Game:
 
 
 if __name__ == '__main__':
-    black_player = ComputerPlayer()
-    white_player = ComputerPlayer()
+    #black_player = ComputerPlayer()
+    logging.basicConfig(level=logging.DEBUG)
+    black_player = SimplePlayer()
+    white_player = SimplePlayer()
 
     game = Game(black_player, white_player)
 
@@ -45,7 +48,7 @@ if __name__ == '__main__':
 
     game_on = True
     while game_on:
-        sleep(4)
+        sleep(2)
         if turn == 'black':
             if black_player.play() == 'surrender':
                 msg = 'Black surrenders'
@@ -62,7 +65,7 @@ if __name__ == '__main__':
                 turn = 'black'
 
         game.chb.print_board()
-        print(msg)
-        print()
+        #print(msg)
+        #print()
 
     print("Game over")
