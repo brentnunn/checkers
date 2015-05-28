@@ -141,6 +141,43 @@ class SimplePlayer(ComputerPlayer):
         return open_squares
 
 
+    def valid_attack(self, mycolor, square, directions):
+        """ Determine if moving a checker to square would attack opponent """
+
+        row, column = square
+
+        for attack_direction in directions:
+            if ((attack_direction in ('nw', 'sw') and square[1] < 2) or
+                (attack_direction in ('ne', 'se') and square[1] > 5) or
+                (attack_direction in ('nw', 'ne') and square[0] < 2) or
+                (attack_direction in ('sw', 'se') and square[0] > 5)):
+                return False
+
+            if attack_direction == 'nw': 
+                ch1 = self.checkerboard.get_checker((row - 1, column - 1))
+                ch2 = self.checkerboard.get_checker((row - 2, column - 2))
+                if ch1 and ch1.color != mycolor and not ch2:
+                    return True
+
+            if attack_direction == 'ne': 
+                ch1 = self.checkerboard.get_checker((row - 1, column + 1))
+                ch2 = self.checkerboard.get_checker((row - 2, column + 2))
+                if ch1 and ch1.color != mycolor and not ch2:
+                    return True
+
+            if attack_direction == 'sw': 
+                ch1 = self.checkerboard.get_checker((row + 1, column - 1))
+                ch2 = self.checkerboard.get_checker((row + 2, column - 2))
+                if ch1 and ch1.color != mycolor and not ch2:
+                    return True
+
+            if attack_direction == 'se': 
+                ch1 = self.checkerboard.get_checker((row + 1, column + 1))
+                ch2 = self.checkerboard.get_checker((row + 2, column + 2))
+                if ch1 and ch1.color != mycolor and not ch2:
+                    return True
+
+
     def select_move(self, moves_list):
         """ Select best move in list """
 
@@ -169,6 +206,21 @@ class SimplePlayer(ComputerPlayer):
             # If checker can become a king, move it
             if not ch.king and (move[1][0] in (0,7)):
                 return ('move', move)
+
+        # Attack if possible
+        for move in moves_list:
+            ch = self.checkerboard.get_checker(move[0])
+            if not self.checker_vulnerable(ch, move[1]):
+                # Will move attack opponent?
+                if ch.king:
+                    if self.valid_attack(ch.color, move[1], ('nw', 'ne', 'sw', 'se')):
+                        return ('move', move)
+                elif ch.color == 'black':
+                    if self.valid_attack(ch.color, move[1], ('nw', 'ne')):
+                        return ('move', move)
+                else:   # ch.color == 'white'
+                    if self.valid_attack(ch.color, move[1], ('sw', 'se')):
+                        return ('move', move)
 
         # Bias towards moving checkers closer to being crowned
         for move in moves_list:
