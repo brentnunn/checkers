@@ -17,7 +17,7 @@ class ComputerPlayer(Player):
         Player.__init__(self)
         random.seed()
         logger.info('Initialized player {}'.format(self.__repr__()))
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.INFO)
 
 
     def list_jumps(self):

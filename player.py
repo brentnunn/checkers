@@ -19,6 +19,7 @@ class Player:
         Player.next_id += 1
 
         self.checkerboard = None
+        self.color = None
         self.checkers = []
 
 

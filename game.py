@@ -21,9 +21,11 @@ class Game:
         self.chb = Checkerboard()
         self.chb.setup_new_board()
 
+        self.black_player.color = 'black'
         self.black_player.checkerboard = self.chb
         self.black_player.checkers = self.chb.black_checkers
 
+        self.white_player.color = 'white'
         self.white_player.checkerboard = self.chb
         self.white_player.checkers = self.chb.white_checkers
 
@@ -35,7 +37,7 @@ class Game:
 
 if __name__ == '__main__':
     #black_player = ComputerPlayer()
-    logging.basicConfig(level=logging.DEBUG)
+    logger.setLevel(logging.INFO)
     black_player = SimplePlayer()
     white_player = SimplePlayer()
 

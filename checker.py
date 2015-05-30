@@ -215,9 +215,10 @@ class Checker:
         
         if (neighbors and neighbors[1] and
             # Verify jump landing square is empty
-            (self.get_checker(neighbors[1]) == None or
-            # Allow for king possibly jumping in a circle back to start
-            self.get_checker(neighbors[1]) == self) and
+            (  self.get_checker(neighbors[1]) == None or
+               # Allow for king possibly jumping in a circle back to start
+               self.get_checker(neighbors[1]) == self
+            ) and
             # Is there an opponent's checker to jump over?
             self.get_checker(neighbors[0]) and
             self.get_checker(neighbors[0]).color != self.color and
@@ -230,7 +231,6 @@ class Checker:
         else:
             logger.debug('valid_jump({}): False'.format(neighbors))
             return False
-
 
 
     def _add_jump_square(self, square):
