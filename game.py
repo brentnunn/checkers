@@ -1,4 +1,5 @@
 
+import collections
 import logging
 from time import sleep
 from checkerboard import Checkerboard
@@ -29,6 +30,8 @@ class Game:
         self.white_player.checkerboard = self.chb
         self.white_player.checkers = self.chb.white_checkers
 
+        self.pos_counter = collections.Counter()
+
         
     def start_game():
         """ Begin play """
@@ -50,7 +53,22 @@ if __name__ == '__main__':
 
     game_on = True
     while game_on:
-        sleep(2)
+        # Get hash value of all checkers' positions
+        ch_black_pos = [ch.position for ch in black_player.checkers]
+        ch_white_pos = [ch.position for ch in white_player.checkers]
+        checkers_hash = hash(tuple(ch_black_pos + ch_white_pos))
+        # Game ends in draw if all checkers' positions repeat 3 times
+        #print('type(game.pos_counter) = {}'.format(type(game.pos_counter)))
+        print('len(game.pos_counter) = {}'.format(len(game.pos_counter)))
+        print('checkers_hash = {}'.format(checkers_hash))
+        game.pos_counter.update([checkers_hash])
+        print('game.pos_counter[checkers_hash] = {}'.format(game.pos_counter[checkers_hash]))
+        if game.pos_counter[checkers_hash] >= 4:
+            print('The game is a draw due to repeating positions')
+            game_on = False
+            break
+
+        sleep(1)
         if turn == 'black':
             if black_player.play() == 'surrender':
                 msg = 'Black surrenders'
